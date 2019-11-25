@@ -1,127 +1,54 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
+import { BrowserRouter as Router, Route } from "react-router-dom"
+import { Auth } from "aws-amplify"
 
-import Auth from "../../helpers/Auth0"
+import Login from "../../containers/Login/Login"
+import Detail from "../Detail/Detail"
 
-const MeetupContext = React.createContext()
-const UserContext = React.createContext()
-const auth = new Auth()
+/**
+ *
+ */
+const App = props => {
+  const [isAuthenticating, setIsAuthenticating] = useState(true)
+  const [isAuthenticated, userHasAuthenticated] = useState(false)
 
-const initialState = {
-  meetup: {
-    title: "Auth0 Online Meetup",
-    date: Date(),
-    attendees: ["Bob", "Jessy", "Christina", "Adam"]
-  },
-  user: {
-    name: "Roy"
+  useEffect(() => {
+    onLoad()
+  }, [])
+
+  const onLoad = async () => {
+    try {
+      await Auth.currentSession()
+
+      userHasAuthenticated(true)
+    } catch (e) {
+      if (e !== "No current user") {
+        alert(e)
+      }
+    }
+
+    setIsAuthenticating(false)
   }
-}
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "subscribeUser":
-      return {
-        ...state,
-        attendees: [...state.attendees, action.payload],
-        subscribed: true
-      }
-    case "unSubscribeUser":
-      return {
-        ...state,
-        attendees: state.attendees.filter(
-          attendee => attendee !== action.payload
-        ),
-        subscribed: false
-      }
-    case "loginUser":
-      return {
-        ...state,
-        isAuthenticated: action.payload.authenticated,
-        name: action.payload.user.name
-      }
-    default:
-      return state
-  }
-}
-
-const UserContextProvider = props => {
-  const [state, dispatch] = React.useReducer(reducer, initialState.user)
-  auth.handleAuthentication().then(() => {
-    dispatch({
-      type: "loginUser",
-      payload: {
-        authenticated: true,
-        user: auth.getProfile()
-      }
-    })
-  })
   return (
-    <UserContext.Provider
-      value={{
-        ...state,
-        handleLogin: auth.signIn
-      }}
-    >
-      {props.children}
-    </UserContext.Provider>
+    <div className="App">
+      <Router>
+        <div className="container">
+          <Route
+            path="/"
+            exact
+            component={Detail}
+            appProps={{ isAuthenticated, userHasAuthenticated }}
+          />
+          <Route
+            path="/login"
+            component={Login}
+            appProps={{ isAuthenticated, userHasAuthenticated }}
+          />
+        </div>
+      </Router>
+    </div>
   )
 }
-
-const MeetupContextProvider = ({ user, ...props }) => {
-  const [state, dispatch] = React.useReducer(reducer, initialState.meetup)
-  return (
-    <MeetupContext.Provider
-      value={{
-        ...state,
-        handleSubscribe: () =>
-          dispatch({ type: "subscribeUser", payload: user.name }),
-        handleUnSubscribe: () =>
-          dispatch({ type: "unSubscribeUser", payload: user.name })
-      }}
-    >
-      {props.children}
-    </MeetupContext.Provider>
-  )
-}
-
-const App = () => (
-  <UserContextProvider>
-    <UserContext.Consumer>
-      {user => (
-        <MeetupContextProvider user={user}>
-          <MeetupContext.Consumer>
-            {meetup => (
-              <div>
-                <h1>{meetup.title}</h1>
-                <span>{meetup.date}</span>
-                <div>
-                  <h2>{`Attendees (${meetup.attendees.length})`}</h2>
-                  {meetup.attendees.map(attendant => (
-                    <li key={attendant}>{attendant}</li>
-                  ))}
-                  <p>
-                    {user.isAuthenticated ? (
-                      !meetup.subscribed ? (
-                        <button onClick={meetup.handleSubscribe}>
-                          Subscribe
-                        </button>
-                      ) : (
-                        <button onClick={meetup.handleUnSubscribe}>
-                          Unsubscribe
-                        </button>
-                      )
-                    ) : (
-                      <button onClick={user.handleLogin}>Login</button>
-                    )}
-                  </p>
-                </div>
-              </div>
-            )}
-          </MeetupContext.Consumer>
-        </MeetupContextProvider>
-      )}
-    </UserContext.Consumer>
-  </UserContextProvider>
-)
 
 export default App

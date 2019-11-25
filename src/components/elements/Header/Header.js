@@ -23,7 +23,7 @@ const Header = ({ className }) => (
           />
         </span>
         <Link to="/" className="header__span">
-          Tasks Todo App
+          GoCloud
         </Link>
       </nav>
     </div>
