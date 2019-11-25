@@ -1,8 +1,9 @@
 import React from "react"
 
-const DetailItem = ({ className, title }) => (
+const DetailItem = ({ className, data }) => (
   <div className={className}>
-    <span>{title}</span>
+    <span>{data.id}</span>
+    <span>{data.last_stage}</span>
   </div>
 )
 

@@ -5,8 +5,8 @@ import DetailItem from "../DetailItem/DetailItem"
 const DetailsList = ({ className, items }) => (
   <div className={className}>
     <div>
-      {items.users.map(({ id, email }) => (
-        <DetailItem title={email} />
+      {items.result.map(data => (
+        <DetailItem data={data} />
       ))}
     </div>
   </div>

@@ -2,14 +2,26 @@ import React, { useState } from "react"
 import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap"
 import { Auth } from "aws-amplify"
 
+import { AuthContext } from "../../components/App/App"
 import LoaderButton from "../../components/LoaderButton/LoaderButton"
 import "./Login.css"
 
 const Login = props => {
+  const { dispatch } = React.useContext(AuthContext)
+
   const [isAuthenticated, userHasAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+
+  const initialState = {
+    email: "",
+    password: "",
+    isSubmitting: false,
+    errorMessage: null
+  }
+
+  const [data, setData] = React.useState(initialState)
 
   const validateForm = () => {
     return email.length > 0 && password.length > 0
@@ -20,9 +32,15 @@ const Login = props => {
 
     try {
       await Auth.signIn(email, password)
-      alert("Logged in")
-      props.userHasAuthenticated(true)
+
+      dispatch({
+        type: "LOGIN",
+        payload: ""
+      })
+      // props.userHasAuthenticated(true)
       props.history.push("/")
+
+      alert("Logged in")
     } catch (e) {
       alert(e.message)
       setIsLoading(false)

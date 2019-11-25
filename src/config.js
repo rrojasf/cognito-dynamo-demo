@@ -1,15 +1,11 @@
-const API_USERS_URL = "https://taskmgr-ms-user-api.herokuapp.com/api/users/"
-const API_TASKS_URL = "https://taskmgr-ms-task-api.herokuapp.com/api/tasks/"
+const API_URL = "http://ec2-3-81-201-193.compute-1.amazonaws.com:8080/api"
+const API_URL_LOCAL = "http://localhost:8080/api"
 const PAGE_OFFSET = 20
 const PAGE_LIMIT = 20
 
-export { API_USERS_URL, API_TASKS_URL, PAGE_OFFSET, PAGE_LIMIT }
+export { API_URL, API_URL_LOCAL, PAGE_OFFSET, PAGE_LIMIT }
 
 export default {
-  apiGateway: {
-    REGION: "us-east-1",
-    URL: "http://localhost:8080/api/"
-  },
   cognito: {
     REGION: "us-east-1",
     USER_POOL_ID: "us-east-1_OLTmV62ji", //"us-east-1_WC1ix2EzM",
