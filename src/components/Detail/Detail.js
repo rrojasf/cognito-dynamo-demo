@@ -44,7 +44,7 @@ const reducer = (state, action) => {
 
 const Detail = ({ className }) => {
   // const { state: authState } = React.useContext(AuthContext)
-  const [data, loading] = useFetch(API_URL_LOCAL + "/details")
+  const [data, loading] = useFetch(API_URL + "/details")
   /* const [state, dispatch] = React.useReducer(reducer, initialState)
 
   React.useEffect(() => {
